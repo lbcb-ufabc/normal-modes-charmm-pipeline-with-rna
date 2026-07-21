@@ -1,0 +1,101 @@
+* Energy minimization with restraint
+*
+
+!     Perform first an energy minimization up to an energy gradient of 0.00001
+
+!    Here follows an example for the input:
+
+!-------------------------------------------------------------
+!from file mini.inp
+ bomlev -5
+ faster on
+
+
+
+
+ stream toppar-charmm.str
+
+
+open read card unit 15 name ./step1_pdbreader.psf
+read psf card unit 15
+close unit 15
+
+open read card unit 16 name ./step1_pdbreader.crd
+read coor card unit 16
+close unit 16
+
+
+!---------------------------------------------------------------
+
+!--------------------------------------------------------------!
+!Energy Model
+!Force field definition
+nbond rdie eps 1.0 switch ctonnb 5.0 ctofnb 9.0 cutnb 10.0
+!!!!! ajustar eps para 2.0 em outros calculos dos modos normais
+!--------------------------------------------------------------!
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!    skip CMAP
+!!!! retirar comentario e pular CMAP para outros calculos de modos normais
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+ener
+coor copy comp
+
+cons harm sele all end force 250.0  mass
+mini CONJ nstep 500 tolgrd 1.0
+cons harm sele all end force 100.0  mass
+mini CONJ nstep 500 tolgrd 1.0
+cons harm sele all end force 50.0  mass
+mini CONJ nstep 500 tolgrd 1.0
+cons harm sele all end force 25.0  mass
+mini CONJ nstep 500 tolgrd 1.0
+cons harm sele all end force 10.0  mass
+mini CONJ nstep 500 tolgrd 1.0
+cons harm sele all end force 5.0  mass
+mini CONJ nstep 500 tolgrd 1.0
+cons harm sele all end force 0.0  mass
+mini CONJ nstep 100000 tolgrd 0.01
+
+!----------------------------------------------------------------------!
+! 15/02/2012 - eric - pego de diego gomes
+
+open write card unit 14 name ./mini-inter.pdb
+write coor pdb unit 14
+* Writing the coordinates of the minimised structure in pdb format
+* of chainA
+* harmonic restraints are used + CONJ gradient up to 0.01
+*
+!---------------------------------------------------------------------!
+
+cons harm sele all end force 0.0  mass
+mini ABNR nstep 100000 tolgrd 0.00001
+
+
+!-------------------------------------------------------
+!rms with mass
+coor orient rms mass
+
+!rms alpha carbon
+coor orient rms sele type ca end
+
+open write card unit 31 name ./min_restr.pdb
+write coor pdb unit 31
+* Writing the coordinates of the minimised structure in pdb format
+* Minimized without CMAP
+*
+
+open write card unit 31 name ./min_restr.crd
+write coor card unit 31
+* Writing the coordinates of the minimized structure in crd format
+* Minimized without CMAP
+* a partir de ./crds/1bve_m1_charmm.crd
+*
+
+!    close unit 14
+
+
+ener
+
+stop
+!-----------------------------------------------------------------
