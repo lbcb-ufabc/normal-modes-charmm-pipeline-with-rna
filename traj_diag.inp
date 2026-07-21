@@ -1,0 +1,46 @@
+* creer une trajectoire pour chacun des modes de 1hdd
+*
+
+bomlev -5
+faster on
+
+
+! Read topology and parameter files
+stream toppar-charmm.str
+
+open read card unit 15 name ./step1_pdbreader.psf
+read psf card unit 15
+close unit 15
+
+open read card unit 16 name ./min_restr.crd
+
+read coor card unit 16
+close unit 16
+
+nbond rdie eps 1.0 switch ctonnb 5.0 ctofnb 9.0 cutnb 10.0
+
+! Open normal-modes file
+open read file unit 99 name ./modes.mod
+
+! Number of mode trajectories to be written
+set ntraj 100
+
+! Open trajectory (.dcd) files to write
+set i 0
+set nunit 10
+label nameloop
+increment i by 1
+open write unit @nunit file name ./mode_@i.dcd
+
+vibran nmod @ntraj
+rewind unit 99
+
+read norm file unit 99 mode 1 thru @ntraj
+write traj mode @i mrms 3.0 phase 7.2 unit @nunit
+close unit 10
+if i .lt. @ntraj goto nameloop
+
+end
+
+stop
+
