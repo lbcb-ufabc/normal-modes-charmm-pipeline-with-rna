@@ -29,7 +29,6 @@ Este pipeline foi desenvolvido para:
 # 📂 Estrutura do repositório
 
 ```text
-.
 ├── requirements.md
 ├── mini-restraint.inp
 ├── ligdiag.inp
