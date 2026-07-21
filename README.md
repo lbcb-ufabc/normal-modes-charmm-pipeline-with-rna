@@ -1,5 +1,4 @@
-# normal-modes-charmm-pipeline-with-rna
-# Pipeline de Análise de Modos Normais
+# Pipeline de Análise de Modos Normais em proteína com RNA
 
 ## 📌 Descrição
 
