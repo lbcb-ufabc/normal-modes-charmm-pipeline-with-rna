@@ -1,0 +1,74 @@
+* MODES DU CANAL
+*
+
+bomlev -5
+faster on
+
+
+! Read topology and parameter files
+stream toppar-charmm.str
+
+
+open read card unit 15 name ./step1_pdbreader.psf
+read psf card unit 15
+close unit 15
+
+open read card unit 16 name ./min_restr.crd
+read coor card unit 16
+close unit 16
+
+
+
+!--------------------------------------------------------------!
+!Energy Model
+!Force field definition
+nbond rdie eps 1.0 switch ctonnb 5.0 ctofnb 9.0 cutnb 10.0
+!--------------------------------------------------------------!
+
+skip CMAP
+
+! On fait une minimisation supplémentaire pour éliminer des
+! erreurs de précision lors de la lecture des données
+!mini abnr nstep 50000 tolgrd 0.00001
+mini abnr nstep 250000 tolgrd 0.000001
+
+
+
+
+! Ouvrir fichier pour contenir les modes
+open write file unit 41 name ./modes.mod
+
+
+
+
+! Calculer les modes: 3N = 3* =  modes pour N= atomes
+! On va calculer ici seulement 200 modes
+! adicionado de dwin pard 400
+vibran nmodes 200
+dimb ctf1 30 iter  100000 tole 0.00001 savf 100 iunmod 41 dwin  pard 1000
+
+
+! Ecrire le fichier des modes (valeurs et vecteurs propres des
+! 20 premiers modes de plus basse frequence)
+write norm file unit 41 mode 1 thru 200
+
+! Calcul des fluctuations (total de 7 a 200)
+fluct atom temp 300 tfreq 0.1 mode 7 thru 200
+
+
+
+end
+
+scalar xcomp store 1
+scalar ycomp +store 1
+scalar zcomp +store 1
+scalar wcomp recall 1
+scalar wcomp sqrt
+
+SCALar WCOMP SHOW SELE TYPE CA END
+SCALar WCOMP SHOW SELE TYPE SG END
+SCALar WCOMP SHOW SELE TYPE C3' END
+stop
+
+
+
